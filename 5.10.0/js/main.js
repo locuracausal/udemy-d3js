@@ -67,17 +67,49 @@ d3.json("data/data.json").then(function (data) {
 	console.log(dataSinNull)
 	const countries = dataSinNull[0].countries
 	const circlesChart = healthChart.selectAll('circle').data(data)
+	x.domain([100, 60000])
+	y.domain([90, 0])
+
+	
+	const populationScale = d3.scalePow()
+		.exponent(0.5)
+		.domain([0, d3.max(countries, c => c.population)])
+		.range([0, 20]);
+
 
 
 
 	const xAxisScale = d3.axisBottom(x)
 		.tickValues([400, 4000, 40000])
 	const yAxisScale = d3.axisLeft(y)
+
 	xAxisGroup
 		.call(xAxisScale);
 
 	yAxisGroup
 		.call(yAxisScale);
+
+	const COLOR_CONTINENT = {
+		'africa': () => 'red',
+		'americas': () => 'yellow',
+		'asia': () => 'purple',
+		'europe': () => 'blue',
+		'oceania': () => 'green'
+
+	}
+
+	countries.forEach(country => {
+
+
+		circlesChart.enter()
+			.append('circle')
+			.attr('cx', x(country.income))
+			.attr('cy', y(country.life_exp))
+			.attr('r', populationScale(country.population))
+			.attr('stroke', 'black')
+			.attr('fill', COLOR_CONTINENT[country.continent]);
+
+	});
 
 
 	let segundos = 0
@@ -91,12 +123,10 @@ d3.json("data/data.json").then(function (data) {
 
 
 
-})
-	.catch((err) => console.error("Hay un error BOLUDO!"))
+}).catch((err) => console.error("Hay un error BOLUDO!: ", err))
+
 
 function update(countries) {
-	x.domain([100, 60000])
-	y.domain([90, 0])
 
 
 
