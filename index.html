@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Hola D3.JS</h1>
+    <svg>
+        <rect height="200" width="100" style="fill: red;"></rect>
+    </svg>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="130" height="80" viewBox="0 0 130 80">
+        <line x1="10" y1="10" x2="120" y2="70" stroke-width="3" stroke="RoyalBlue" />
+    </svg>
+    <h2>D3 select</h2>
+    <div class='papa'></div>
+    <div class="papa"></div>
+    <div id="canvas"></div>
+
+    <script src="./5.10.0/js/main.js">
+
+    </script>
+    <script>
+        var data = [];
+
+        d3.json("data/buildings.json").then((info) => {
+            data = info;
+            console.log(data)
+            const bars = svg1.selectAll('rect').data(data)
+
+            bars.enter()
+                .append('rect')
+                .attr('width', 20)
+                .attr('height', (d) => d.height)
+                .attr('x', (d, i) => i * 25)
+                .attr('y', (d) => 400 - d.height)
+                .style('fill', 'blue')
+        });
+
+        var svg = d3.selectAll('.papa').append('svg')
+        var svg1 = d3.select('#canvas')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 400)
+
+
+
+        svg
+            .append('circle')
+            .attr('r', 70)
+            .attr('cx', 95)
+            .attr('cy', 80)
+            .style('fill', 'orange')
+
+        svg1
+            .append('line')
+            .attr('x1', 0)
+            .attr('y1', 399)
+            .attr('x2', 400)
+            .attr('y2', 400)
+            .attr('stroke-width', 3)
+            .attr('stroke', 'RoyalBlue')
+            .style('fill', 'orange')
+
+        svg1
+            .append('circle')
+            .attr('r', 70)
+            .attr('cx', 200)
+            .attr('cy', 250)
+            .style('fill', 'orange')
+
+        svg1
+            .append('rect')
+            .attr('width', 70)
+            .attr('height', 95)
+            .style('fill', 'orange')
+
+
+    </script>
+
+</body>
+
+</html>
