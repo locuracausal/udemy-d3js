@@ -8,6 +8,7 @@ const MARGIN = { LEFT: 60, RIGHT: 20, TOP: 10, BOTTOM: 30 }
 const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
 const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
 
+let year = 0
 
 
 
@@ -65,12 +66,12 @@ d3.json("data/data.json").then(function (data) {
 	});
 
 	console.log(dataSinNull)
-	const countries = dataSinNull[0].countries
-	const circlesChart = healthChart.selectAll('circle').data(data)
+	let countries = dataSinNull[year].countries
+
 	x.domain([100, 60000])
 	y.domain([90, 0])
 
-	
+
 	const populationScale = d3.scalePow()
 		.exponent(0.5)
 		.domain([0, d3.max(countries, c => c.population)])
@@ -95,27 +96,29 @@ d3.json("data/data.json").then(function (data) {
 		'asia': () => 'purple',
 		'europe': () => 'blue',
 		'oceania': () => 'green'
-
 	}
 
-	countries.forEach(country => {
+	// countries.forEach(country => {
 
 
-		circlesChart.enter()
-			.append('circle')
-			.attr('cx', x(country.income))
-			.attr('cy', y(country.life_exp))
-			.attr('r', populationScale(country.population))
-			.attr('stroke', 'black')
-			.attr('fill', COLOR_CONTINENT[country.continent]);
+	// 	circlesChart.enter()
+	// 		.append('circle')
+	// 		.attr('cx', x(country.income))
+	// 		.attr('cy', y(country.life_exp))
+	// 		.attr('r', populationScale(country.population))
+	// 		.attr('stroke', 'black')
+	// 		.attr('fill', COLOR_CONTINENT[country.continent]);
 
-	});
+	// });
 
 
 	let segundos = 0
 	d3.interval(() => {
+
+		countries = dataSinNull[year].countries
 		update(countries)
 		segundos++
+		year++
 		console.log("Segundos", segundos)
 
 	}, 1000)
@@ -127,9 +130,9 @@ d3.json("data/data.json").then(function (data) {
 
 
 function update(countries) {
-
-
-
+	debugger
+	const circles = healthChart.selectAll('circle').data(countries)
+	circles.exit()
 
 	const populationScale = d3.scalePow()
 		.exponent(0.5)
@@ -157,19 +160,13 @@ function update(countries) {
 		'oceania': () => 'green'
 
 	}
-
-	countries.forEach(country => {
-
-
-		// circlesChart.enter()
-		// 	.append('circle')
-		// 	.attr('cx', x(country.income))
-		// 	.attr('cy', y(country.life_exp))
-		// 	.attr('r', populationScale(country.population))
-		// 	.attr('stroke', 'black')
-		// 	.attr('fill', COLOR_CONTINENT[country.continent]);
-
-	});
-
+	debugger
+	circles.enter()
+		.append('circle')
+		.attr('cx', d => x(d.income))
+		.attr('cy', d => y(d.life_exp))
+		.attr('r', d => populationScale(d.population))
+		.attr('stroke', 'black')
+		.attr('fill', d => COLOR_CONTINENT[d.continent]);
 
 }
