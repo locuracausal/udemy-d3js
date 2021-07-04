@@ -113,8 +113,6 @@ function update(data) {
 
 
 
-
-
     xGroup
         .call(xAxisScale);
 

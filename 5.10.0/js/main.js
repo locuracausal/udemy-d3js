@@ -5,8 +5,8 @@
 */
 
 const MARGIN = { LEFT: 60, RIGHT: 20, TOP: 10, BOTTOM: 30 }
-const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
-const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
+const WIDTH = 800 - MARGIN.LEFT - MARGIN.RIGHT
+const HEIGHT = 600 - MARGIN.TOP - MARGIN.BOTTOM
 
 let year = 0
 
@@ -90,38 +90,22 @@ d3.json("data/data.json").then(function (data) {
 	yAxisGroup
 		.call(yAxisScale);
 
-	const COLOR_CONTINENT = {
-		'africa': () => 'red',
-		'americas': () => 'yellow',
-		'asia': () => 'purple',
-		'europe': () => 'blue',
-		'oceania': () => 'green'
-	}
-
-	// countries.forEach(country => {
-
-
-	// 	circlesChart.enter()
-	// 		.append('circle')
-	// 		.attr('cx', x(country.income))
-	// 		.attr('cy', y(country.life_exp))
-	// 		.attr('r', populationScale(country.population))
-	// 		.attr('stroke', 'black')
-	// 		.attr('fill', COLOR_CONTINENT[country.continent]);
-
-	// });
-
 
 	let segundos = 0
-	d3.interval(() => {
+	const interval = d3.interval(() => {
+		try {
+			countries = dataSinNull[year].countries
+			update(countries)
+			segundos++
+			year++
+		} catch (error) {
+			console.log(error)
+			interval.stop()
+		}
 
-		countries = dataSinNull[year].countries
-		update(countries)
-		segundos++
-		year++
 		console.log("Segundos", segundos)
 
-	}, 1000)
+	}, 100)
 
 
 
@@ -130,37 +114,35 @@ d3.json("data/data.json").then(function (data) {
 
 
 function update(countries) {
-	debugger
-	const circles = healthChart.selectAll('circle').data(countries)
-	circles.exit()
+	//circles.exit()
+	const COLOR_CONTINENT = {
+		'africa': 'red',
+		'americas': 'yellow',
+		'asia': 'purple',
+		'europe': 'blue',
+		'oceania': 'green'
+	}
 
 	const populationScale = d3.scalePow()
 		.exponent(0.5)
 		.domain([0, d3.max(countries, c => c.population)])
-		.range([0, 20]);
+		.range([0, 40]);
 
+	// JOIN new data with old element
 
-	console.log("D3 JS", d3.max(countries, c => c.population))
-	console.log("populationScale", populationScale(10000000))
+	const circles = healthChart.selectAll('circle').data(countries)
+	//Exit old element not present in new data
 
+	circles.exit().remove()
 
-
-
-	// Coloco los textos del grafico
-
-
-
-	console.log("Countries:", countries)
-
-	const COLOR_CONTINENT = {
-		'africa': () => 'red',
-		'americas': () => 'yellow',
-		'asia': () => 'purple',
-		'europe': () => 'blue',
-		'oceania': () => 'green'
-
-	}
-	debugger
+	// UPDATE old element present in new data
+	circles
+		.attr('cx', d => x(d.income))
+		.attr('cy', d => y(d.life_exp))
+		.attr('r', d => populationScale(d.population))
+		.attr('stroke', 'black')
+		.attr('fill', d => COLOR_CONTINENT[d.continent]);
+	// ENTER new elements in new data
 	circles.enter()
 		.append('circle')
 		.attr('cx', d => x(d.income))
@@ -168,5 +150,18 @@ function update(countries) {
 		.attr('r', d => populationScale(d.population))
 		.attr('stroke', 'black')
 		.attr('fill', d => COLOR_CONTINENT[d.continent]);
+
+
+
+
+	console.log("D3 JS", d3.max(countries, c => c.population))
+	console.log("populationScale", populationScale(10000000))
+
+
+	console.log("Countries:", countries)
+
+	//const a = COLOR_CONTINENT['africa']
+	// 	console.log('a: ',a)
+
 
 }
